@@ -47,7 +47,7 @@ var barnsleyFern = function(){
     start.y = res.y;
     context.fillStyle="green"; 
     context.beginPath();
-    context.arc(start.x*canvas.width/10 + canvas.width/2, -start.y*canvas.height/10+canvas.height, 1, 0, 2*Math.PI,false);
+    context.arc(start.x*canvas.width/10 + canvas.width/2, -start.y*canvas.height/15+canvas.height, 1, 0, 2*Math.PI,false);
     context.closePath();
     context.fill();
 }
