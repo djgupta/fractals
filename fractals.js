@@ -6,16 +6,31 @@ canvas.height = window.innerHeight;
 var start = { x:0, y:0 };
 var end = { x:0, y:0 };
 var x=0.,y=0.,xw=0.,yw=0.
-var coeff = {
-    f1: { a:0, b:0, c:0, d:0.16, e:0, f:0 },
-    f4: { a:0.85, b:0.04, c:-0.04, d:0.85, e:0, f:1.60 },
-    f2: { a:0.20, b:-0.26, c:0.23, d:0.22, e:0, f:1.60 },
-    f3: { a:-0.15, b:0.28, c:0.26, d:0.24, e:0, f:0.44 }
-};
+var coeff = {}
+var start_button_value = true
+var restart_button_value = false
+var start_button = document.getElementById('start');
+var restart_button = document.getElementById('restart');
+
+function getConfig(coeff){
+    var oTable = document.getElementById('table');
+    var rowLength = oTable.rows.length;
+    for (i = 1; i < rowLength; i++){
+        var oCells = oTable.rows.item(i).cells;
+        var cellLength = oCells.length;
+        coeff["f"+i] = {}
+        for(var j = 1; j < cellLength; j++){
+            coeff["f"+i][oTable.rows.item(0).cells.item(j).innerHTML] = parseFloat(oCells.item(j).innerHTML)
+        }
+    }
+    return coeff
+}
 
 function animate(time){
     window.setTimeout(function () {
-        barnsleyFern();
+        if(start_button_value){
+            barnsleyFern();
+        }
         window.requestNextAnimationFrame(animate);
     }, 0);
     
@@ -29,19 +44,20 @@ var transformer = function(x,y,coeff){
 }
 
 var barnsleyFern = function(){
+    coeff = getConfig(coeff)
     var rand = Math.random()*100;
     var res;
     if(rand<=1){
         res = transformer(start.x,start.y, coeff.f1);
     }
     else if(rand<=8){
-        res = transformer(start.x,start.y, coeff.f2);
-    }
-    else if(rand<=15){
         res = transformer(start.x,start.y, coeff.f3);
     }
-    else{
+    else if(rand<=15){
         res = transformer(start.x,start.y, coeff.f4);
+    }
+    else{
+        res = transformer(start.x,start.y, coeff.f2);
     }
     start.x = res.x;
     start.y = res.y;
@@ -50,6 +66,18 @@ var barnsleyFern = function(){
     context.arc(start.x*canvas.width/10 + canvas.width/2, -start.y*canvas.height/15+canvas.height, 1, 0, 2*Math.PI,false);
     context.closePath();
     context.fill();
+}
+
+start_button.onclick = function(e){
+    console.log(start_button_value)
+    start_button_value = !start_button_value
+    start_button.value = start_button_value ? 'stop' : 'start';
+}
+
+restart_button.onclick = function(e){
+    context.clearRect(0,0,canvas.width, canvas.height);
+    start_button_value = false;
+    start_button.value = 'start';
 }
 
 //For Animation
